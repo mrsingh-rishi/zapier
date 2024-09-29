@@ -31,7 +31,7 @@ async function main() {
       },
     });
 
-    console.log("delete the pending rows");
+    console.log("delete the 10 pending rows");
   }
 }
 
