@@ -1,10 +1,11 @@
 import { Request, Response, Router } from "express";
-import { authMiddleware } from "../middleware";
+import { authMiddleware, AuthRequest } from "../middleware";
 import { prisma } from "../db";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import { signinSchema, signupSchema } from "../types/types";
+import { JWT_SECRET } from "../config";
 
 dotenv.config();
 
@@ -25,7 +26,7 @@ userRouter.post(
       const existingUser = await prisma.user.findUnique({
         where: { email },
       });
-
+      console.log("Existing User", existingUser);
       if (existingUser) {
         return res.status(400).json({ message: "Email already exists" });
       }
@@ -34,14 +35,11 @@ userRouter.post(
       const user = await prisma.user.create({
         data: { email, password: hashedPassword, name },
       });
-
-      const token = jwt.sign(
-        { id: user.id, email: user.email },
-        process.env.JWT_SECRET || "secret",
-        {
-          expiresIn: "1h",
-        }
-      );
+      // TODO: add the email verification logic =sent out an email verification mail to user's email address
+      // And remove the token from the response
+      const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
+        expiresIn: "1h",
+      });
 
       return res
         .status(201)
@@ -73,13 +71,9 @@ userRouter.post(
         return res.status(400).json({ message: "Invalid email or password" });
       }
 
-      const token = jwt.sign(
-        { id: user.id, email: user.email },
-        process.env.JWT_SECRET || "secret",
-        {
-          expiresIn: "1h",
-        }
-      );
+      const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
+        expiresIn: "1h",
+      });
 
       return res
         .status(201)
@@ -92,6 +86,26 @@ userRouter.post(
 
 userRouter.get(
   "/user",
-  authMiddleware,
-  async (req: Request, res: Response) => {}
+  authMiddleware, // No need for @ts-ignore
+  async (req: Request, res: Response): Promise<any> => {
+    try {
+      // Type assertion to cast `req` to `AuthRequest`
+      const userId = (req as AuthRequest).user.id;
+      const user = await prisma.user.findUnique({
+        where: { id: Number(userId) },
+        select: {
+          email: true,
+          name: true,
+        },
+      });
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      return res.status(200).json({ user });
+    } catch (error: any) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
 );

@@ -11,6 +11,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("api/v1", router);
+app.use("/api/v1", router);
 
-app.listen(port);
+app.listen(port, () => console.log("listening on port " + port));
