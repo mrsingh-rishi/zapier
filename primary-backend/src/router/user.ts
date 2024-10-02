@@ -6,6 +6,8 @@ import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import { signinSchema, signupSchema } from "../types/types";
 import { JWT_SECRET } from "../config";
+import { getVerificationTemplate } from "../templates/email";
+import EmailEngine from "../engine/email";
 
 dotenv.config();
 
@@ -35,15 +37,32 @@ userRouter.post(
       const user = await prisma.user.create({
         data: { email, password: hashedPassword, name },
       });
-      // TODO: add the email verification logic =sent out an email verification mail to user's email address
-      // And remove the token from the response
+
       const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
         expiresIn: "1h",
       });
+      const baseUrl = process.env.BASE_URL || "";
 
-      return res
-        .status(201)
-        .json({ message: "User created successfully", user, token });
+      const verificationLink = baseUrl + "?token=" + token;
+
+      const template = getVerificationTemplate(verificationLink);
+
+      const subject = "Please Verify Your Email Address";
+      try {
+        await EmailEngine.getInstance().sendEmail({
+          htmlContent: template,
+          subject,
+          recipientName: user.name,
+          recipientEmail: user.email,
+        });
+      } catch (error) {
+        console.log("error occurred", error);
+      }
+
+      return res.status(201).json({
+        message:
+          "Verification Mail has been sent to your email address, verify and login again",
+      });
     } catch (error: any) {
       return res.status(500).json({ error: error.message });
     }
@@ -74,10 +93,10 @@ userRouter.post(
       const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
         expiresIn: "1h",
       });
-
+      const { password: pw, verified, ...sanitizedUser } = user;
       return res
         .status(201)
-        .json({ message: "Login Successfully", user, token });
+        .json({ message: "Login Successfully", user: sanitizedUser, token });
     } catch (error: any) {
       return res.status(500).json({ error: error.message });
     }

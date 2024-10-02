@@ -1,1 +1,1 @@
-{"root":["./src/config.ts","./src/db.ts","./src/index.ts","./src/middleware.ts","./src/router/index.ts","./src/router/user.ts","./src/router/zap.ts","./src/types/types.ts"],"version":"5.6.2"}
+{"root":["./src/config.ts","./src/index.ts","./src/db/db.ts","./src/engine/email.ts","./src/middleware/middleware.ts","./src/router/index.ts","./src/router/user.ts","./src/router/zap.ts","./src/templates/email.ts","./src/types/types.ts"],"version":"5.6.2"}
