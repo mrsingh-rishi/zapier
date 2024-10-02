@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { authMiddleware } from "../middleware";
+import { authMiddleware } from "../middleware/middleware";
 
 export const zapRouter = Router();
 

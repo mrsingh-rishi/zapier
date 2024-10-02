@@ -10,6 +10,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@getbrevo/brevo": "^2.2.0",
     "@prisma/client": "^5.20.0",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",

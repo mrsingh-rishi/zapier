@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
-import { authMiddleware, AuthRequest } from "../middleware";
-import { prisma } from "../db";
+import { authMiddleware, AuthRequest } from "../middleware/middleware";
+import { prisma } from "../db/db";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
