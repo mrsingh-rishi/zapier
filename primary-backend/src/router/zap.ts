@@ -21,10 +21,12 @@ zapRouter.post(
             // @ts-ignore
             userId: req.user.id,
             triggerId: "",
-            actions: actions.map((action: any, index: number) => ({
-              actionId: action.availableActionId,
-              sortingOrder: index,
-            })),
+            actions: {
+              create: actions.map((action: any, index: number) => ({
+                actionId: action.availableActionId,
+                sortingOrder: index,
+              })),
+            },
           },
         });
 
