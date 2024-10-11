@@ -88,6 +88,8 @@ zapRouter.get(
       const zap = await prisma.zap.findUnique({
         where: {
           id: req.params.zapId,
+          // @ts-ignore
+          userId: req.user.id,
         },
         include: {
           actions: {
