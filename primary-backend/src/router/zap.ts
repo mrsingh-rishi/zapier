@@ -15,7 +15,7 @@ zapRouter.post(
         return res.status(400).json({ error: "Invalid request body" });
       }
       const { availableTriggerId, triggerMetadata, actions } = req.body;
-      await prisma.$transaction(async (tx) => {
+      const zapId = await prisma.$transaction(async (tx) => {
         const zap = await tx.zap.create({
           data: {
             // @ts-ignore
@@ -43,7 +43,11 @@ zapRouter.post(
             triggerId: trigger.id,
           },
         });
+
+        return zap.id;
       });
+
+      return res.status(200).json({ zapId });
     } catch (error: any) {
       return res.status(500).json({ error: error, message: error.message });
     }
