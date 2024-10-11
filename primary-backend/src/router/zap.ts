@@ -60,6 +60,18 @@ zapRouter.get(
         where: {
           userId: id,
         },
+        include: {
+          actions: {
+            include: {
+              type: true,
+            },
+          },
+          trigger: {
+            include: {
+              type: true,
+            },
+          },
+        },
       });
 
       return res.status(200).json({ zaps });
@@ -76,6 +88,18 @@ zapRouter.get(
       const zap = await prisma.zap.findUnique({
         where: {
           id: req.params.zapId,
+        },
+        include: {
+          actions: {
+            include: {
+              type: true,
+            },
+          },
+          trigger: {
+            include: {
+              type: true,
+            },
+          },
         },
       });
 
