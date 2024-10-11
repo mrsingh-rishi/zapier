@@ -19,14 +19,17 @@ model User{
   email       String        @unique
   password    String
   verified    Boolean       @default(false)
+  zaps        Zap[]         
 }
 
 model Zap{
   id          String          @id @default(uuid())
   triggerId   String
+  userId      Int
   trigger     Trigger? 
   actions     Action[]
   zapRuns     ZapRun[]
+  user        User            @relation(fields: [userId], references: [id])
 }
 
 model Trigger{

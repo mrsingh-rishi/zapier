@@ -104,7 +104,7 @@ userRouter.post(
 );
 
 userRouter.get(
-  "/user",
+  "/",
   authMiddleware, // No need for @ts-ignore
   async (req: Request, res: Response): Promise<any> => {
     try {
